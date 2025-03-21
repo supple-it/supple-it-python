@@ -85,7 +85,7 @@ def load_category_data(category):
             raise ValueError(f"{file_path} 파일이 비어 있습니다.")
         
         # TF-IDF 벡터화
-        vectorizer_path = f"tfidf_vectorizer_{category}.pkl"
+        vectorizer_path = f"./data/tfidf_vectorizer_{category}.pkl"
         if os.path.exists(vectorizer_path):
             with open(vectorizer_path, "rb") as f:
                 tfidf = pickle.load(f)
@@ -235,4 +235,4 @@ if __name__ == '__main__':
     for category in list(CATEGORIES.keys())[:1]:
         load_category_data(category)
     
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=5000)
