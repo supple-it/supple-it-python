@@ -7,7 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from flask_cors import CORS
 import pickle
 import re
-from urllib.parse import unquote
+from urllib.parse import unquote    
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -15,14 +15,14 @@ CORS(app)
 
 # CSV 파일 경로 설정
 DATA_DIRS = {
-    'efficacy': 'data/efficacy',
-    'nutrient': 'data/nutrient'
+    'efficacy': './recommend/data/efficacy',
+    'nutrient': './recommend/data/nutrient'
 }
 
 # 베이스 카테고리 설정
 BASE_CATEGORIES = {
     '비타민': {
-        'file': 'data/nutrient/preprocessed_비타민.csv',
+        'file': './recommend/data/nutrient/preprocessed_비타민.csv',
         'search_column': 'processed_text',  # processed_text 컬럼 사용
         'default_term': '비타민'
     }
@@ -85,7 +85,7 @@ def load_category_data(category):
             raise ValueError(f"{file_path} 파일이 비어 있습니다.")
         
         # TF-IDF 벡터화
-        vectorizer_path = f"./data/tfidf_vectorizer_{category}.pkl"
+        vectorizer_path = f"./recommend/data/tfidf_vectorizer_{category}.pkl"
         if os.path.exists(vectorizer_path):
             with open(vectorizer_path, "rb") as f:
                 tfidf = pickle.load(f)
@@ -169,7 +169,7 @@ def recommend(keyword, category=None, limit=5):
         seen_products = set()
         
         # 일정 유사도 이상 제품만 추가
-        threshold = 0.01  # 필요시 조정
+        threshold = 0.05  # 필요시 조정
         for idx, score, product_name in product_scores:
             if score > threshold and product_name not in seen_products:
                 final_products.append(product_name)
@@ -191,7 +191,7 @@ def get_recommendations():
     
     keyword = unquote(keyword)  # URL 디코딩
     if not keyword:
-        return jsonify({"error": "검색어를 입력하세요."}), 400
+        return jsonify({"error": "키워드가 잘못되었습니다."}), 400
     
     if not category:
         category = guess_category(keyword)
